@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Home Password";
+}
+
+@model CarInventory.Controllers.UserAuth
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.id )
+        @Html.HiddenFor(model => model.validateError )
+        @Html.HiddenFor(model => model.app_msg )
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.username, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10"> 
+                @Html.EditorFor(model => model.username, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.password, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.password, new { htmlAttributes = new { @class = "form-control" ,  type = "password"  } })
+            </div>
+        </div>
+        <div class="form-group mt-4">
+            <div class="col-md-10">
+                <div class="alert alert-danger mt-4" role="alert" id = "alertbox" hidden >
+                    A simple danger alert—check it out! 
+                </div>
+             </div>
+        </div>
+        <div class="form-group mt-4">
+            <div class="col-md-offset-2 col-md-4">
+                <input type="submit" value="Login" class="btn btn-secondary  btn-default me-4 " />
+                @Html.ActionLink("Have no account ?", "index" , "CreateUser" )
+            </div>
+        </div>
+    </div>
+}
+
+<script> 
+
+
+
+$( document ).ready(function() {
+    if(  $("#validateError").val().trim() != ""  ){
+        if( $("#app_msg").val() == "1" ){
+            $("#alertbox").html( $("#validateError").val() ) ;
+        }else{
+            $("#alertbox").html("Please enter " + $("#validateError").val() ) ;
+        } 
+        $("#alertbox").removeAttr('hidden' , 'hidden' ) ;
+    } 
+});
+</script>
