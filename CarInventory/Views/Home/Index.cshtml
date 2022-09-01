@@ -1,0 +1,201 @@
+﻿@{
+    ViewData["Title"] = "Cars";
+}
+
+@model List<Car>
+@{
+    ViewBag.Title = "Cars";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+<div class="row g-3 align-items-center">
+  <div class="col-auto">
+    <label for="brandsearch" class="col-form-label" style="font-size:20px;">Brand</label>
+  </div>
+  <div class="col-auto">
+    <input type="text" id="brandsearch" name="brandsearch" class="form-control" style="height:28px;" maxlength="200" value="@ViewBag.brandsearch" >
+  </div>
+  <div class="col-auto">
+    <label for="modelserach" class="col-form-label" style="font-size:20px;">Model</label>
+  </div>
+  <div class="col-auto">
+    <input type="text" id="modelserach" name="modelserach" class="form-control" style="height:28px;" maxlength="200" value="@ViewBag.modelserach">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-secondary py-0" style="height:28px;" >Seach</button>
+  </div>
+</div>
+}
+
+
+
+
+<div class="row">
+<div id="openpopup"  data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer" >
+    <i style="text-decoration: none; font-weight:normal ; font-size:30px;"> Your Cars </i>
+    <div class="float-end align-bottom " style="margin-top:20px;"> <i class="fa-solid fa-file-circle-plus " style="font-size:25px;" ></i>  Add New car </div>
+</div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Price</th>
+                <th>New</th>
+                <th>Action</th>
+            </tr>
+        </thead> 
+        <tbody id="editcar" >
+            @foreach (var item in Model )
+            {               
+                <tr>
+                    <td class="id" hidden > @Html.DisplayFor(modelItem => item.CarId)  </td>
+                    <td class="brand" > @Html.DisplayFor(modelItem => item.Brand)  </td>
+                    <td class="model" > @Html.DisplayFor(modelItem => item.Model)  </td>
+                    <td class="year" > @Html.DisplayFor(modelItem => item.Year)  </td>
+                    <td class="price" > @Html.DisplayFor(modelItem => item.Price)  </td>
+                    <td class="isnew_yes_no"  >   @if ( item.New )
+                        {  <p> Yes </p>   }
+                        else
+                        {   <p> No </p> } 
+                    </td>
+                    <td> 
+                      <i class="fa-solid fa-pen-to-square  edit"></i> 
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<!--
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>
+
+ Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Car</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+            <label for="input1" class="form-label">Brand</label>
+            <input type="text" class="form-control cleanPopup" id="input1" maxlength="200" > 
+        </div>
+        <div class="mb-3">
+            <label for="input1" class="form-label">Model</label>
+            <input type="text" class="form-control cleanPopup" id="input2"  maxlength="200"> 
+        </div>
+        <div class="mb-3">
+            <label for="input1" class="form-label">Year</label>
+            <input type="number" class="form-control cleanPopup" id="input3" onkeypress="return limitChar(event)" > 
+        </div>
+        <div class="mb-3">
+            <label for="input1" class="form-label">Price</label>
+            <input type="number" step=".01" min="0" max="99999" class="form-control cleanPopup" id="input4" onkeypress="return onlyNumberKey(event)"  maxlength="8"  > 
+        </div>
+        <div class="mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="isNew" >
+        <label class="form-check-label" for="isNew"> Is New  </label>
+      </div>
+    </div>
+      </div>
+      <div class="modal-footer">
+        <button id="closeNewCar" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="saveNewCar" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="text" id="modifymodeid" hidden  >
+<script>
+
+$( "#editcar" ).delegate( ".edit", "click", function() {
+   let row =  $( this ).parent().parent()
+   let id = row.find(".id").text() ;
+   let brand = row.find(".brand").text() ;  
+   let model = row.find(".model").text() ;  
+   let year = row.find(".year").text() ;  
+   let price = row.find(".price").text() ; 
+   let isnew_yes_no = row.find(".isnew_yes_no").text() ; // 
+   $("#input1").val(brand.trim() ) ;
+   $("#input2").val(model.trim() ) ;
+   $("#input3").val(parseInt( year) ) ;
+   $("#input4").val( parseFloat(price) ) ;
+    $('#isNew').prop('checked', true ); 
+   if( isnew_yes_no.trim() == "Yes" ){ $('#isNew').prop('checked', true ); }
+   else{ $('#isNew').prop('checked', false ); } 
+   $("#modifymodeid").val( id );
+   $("#openpopup").click() ;
+});
+
+
+$("#openpopup").click( function(){
+    if( $("#modifymodeid").val() == "" ){
+      $(".cleanPopup").val('');
+    }
+})
+
+const myModalEl = document.getElementById('exampleModal')
+myModalEl.addEventListener('hide.bs.modal', event => {
+   $("#modifymodeid").val('') ;
+})
+
+
+
+function onlyNumberKey(evt) { 
+    if( evt.target.value.length > 5  ){ return false ; }
+    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+    if( ASCIICode == 46 )
+        return true ;
+    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+        return false;
+    return true;
+}
+
+function limitChar( evt ){
+    if( evt.target.value.length > 3  ){ return false ; }
+    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+        return false;
+    return true 
+}
+
+$("#saveNewCar").click( function(){
+
+    let isnew = "0" ;
+    if ($('#isNew').is(':checked')) { isnew = "1"  }
+    $.ajax({
+    method: "get",
+    url: '@Url.Action("savecar", "Home", new { id = "123" })' ,
+    data: { code : $("#modifymodeid").val() + "±" + $("#input1").val( ) + "±" +  $("#input2").val( ) + "±" +  $("#input3").val( ) + "±" +  $("#input4").val( ) + "±" + isnew  }
+    })
+    .done(function( msg ) {
+        if( 'Done' == msg ){
+            $("#modifymodeid").val('') ;
+            location.reload();
+        } else if(msg != "") {
+            alert("Please Enter "+ msg.trim().trim(",").trim() +".") ;
+        }
+    })
+    .fail(function() {
+        // alert( "error" );
+    })
+    .always(function() {
+        //     // $("#closeNewCar").click() ;
+        // $("#modifymodeid").val('') ;
+        // location.reload();
+        //   //  alert( "complete" );
+    });
+    //  $("#closeNewCar").click();
+})
+</script> 
